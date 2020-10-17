@@ -83,7 +83,7 @@
 
         <div id="novosti_put">
             <input type="text" name="id_novosti" id="id_novosti">
-            <input type="text" name="naslov_novosti_put" placeholder="Unesite novi naslov novosti">
+            <input type="text" name="naslov_novosti_put" id="naslov_novosti_put" placeholder="Unesite novi naslov novosti">
             <br>
             <textarea name="tekst_novosti_put" id="tekst_novosti_put" cols="30" rows="10" placeholder="Unesite novi tekst novosti"></textarea>
             <br>
@@ -241,7 +241,7 @@
 
                         //getJSON funkcija ima 2 bitna parametra, a to su url koji prosleđujemo i success funkcija koja kojom obrađujemo podatke koje smo dobili
                         //data parametar u okviru funkcije, predstavlja podatke poslate sa servera u JSON formatu
-                        $.getJSON("http://localhost:8080/rest/rest/novosti", function(data){
+                        $.getJSON("http://localhost/rest/api/novosti", function(data){
                             //postavljamo unutrašnji HTML div bloka get_odgovor na pretty string reprezentaciju JSON objekta
                             //string reprezentacija je mogla i da se postavi samo sa JSON.stringify(data)
                             // ali postavljamo i parametre null i 2 kako bi prikaz JSONa bio čitljiv
@@ -249,7 +249,7 @@
                         });
                     }else{
                         //ponavljamo istu proceduru samo za tabelu kategorije
-                        $.getJSON("http://localhost:8080/rest/rest/kategorije", function(data){
+                        $.getJSON("http://localhost/rest/api/kategorije", function(data){
                             document.getElementById("get_odgovor").innerHTML = JSON.stringify(data,null,2);
                         });
                     }
@@ -271,7 +271,7 @@
                         //url na koji šaljemo podatke
                         //koje podatke šaljemo
                         //i success funkcija u okviru koje prikazujemo odgovor sa servera
-                        $.post("http://localhost:8080/rest/rest/novosti", JSON.stringify(values),function(data){
+                        $.post("http://localhost/rest/api/novosti", JSON.stringify(values),function(data){
                             alert("Odgovor od servera> "+data['poruka']);
                         });
                     }else{
@@ -280,17 +280,74 @@
                             "kategorija": $("input[name=kategorija_naziv]").val(),
                         }
                         console.log(values);
-                        $.post("http://localhost:8080/rest/rest/kategorije", JSON.stringify(values),function(data){
+                        $.post("http://localhost/rest/api/kategorije", JSON.stringify(values),function(data){
                             alert("Odgovor od servera> "+data['poruka']);
                         });
                         
                     }
                     break;
                 case "put":
-                    //kod za bonus poene
+                
+                if(tabela=="radio_novosti"){
+
+                 var value1=document.getElementById("id_novosti").value;
+                 var value2=document.getElementById("naslov_novosti_put").value;
+                 var value3=document.getElementById("tekst_novosti_put").value;
+                 var value4=document.getElementById("kategorija_odabir_put").value;
+                
+                 $.ajax({
+                 url: "http://localhost/rest/api/novosti/"+value1,
+                 type: 'PUT',
+                 data:JSON.stringify({
+                    
+                    "naslov":value2,
+                    "tekst":value3,
+                    "kategorija_id":value4
+
+
+
+                 }),
+                 success: function(data) {
+                 alert("Odgovor od servera>"+data['poruka'])
+                 }
+               });
+               }else
+                   var value5=document.getElementById("id_kategorije").value;
+                   var value6=document.getElementById("kategorija_naziv_put").value;  
+
+                   $.ajax({
+                   url: "http://localhost/rest/api/kategorije/"+value5,
+                   type: 'PUT',
+                   data: JSON.stringify({
+                    "kategorija" : value6
+                   }),
+                   success: function(data) {
+                   alert("Odgovor od servera>"+data['poruka'])
+                   }
+               })            
                     break;
                 case "delete":
-                    //kod za bonus poene
+                    var value=document.getElementById("brisanje").value;
+                    if(tabela=="radio_novosti"){
+                        $.ajax({
+                        url: "http://localhost/rest/api/novosti/"+value,
+                        type: 'DELETE',
+                        success: function(data) {
+                        alert("Odgovor od servera>"+data['poruka'])
+                        }
+                    });
+                    }else{
+                        $.ajax({
+                        url: "http://localhost/rest/api/kategorije/"+value,
+                        type: 'DELETE',
+                        success: function(data) {
+                        alert("Odgovor od servera>"+data['poruka'])
+                        }
+                    });
+
+                    }
+                    
+
                     break;
                 default:
                     console.log("default");
